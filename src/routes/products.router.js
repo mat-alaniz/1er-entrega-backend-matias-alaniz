@@ -73,7 +73,7 @@ router.put('/:pid', async (req, res) => {
 //eliminar un producto.
 router.delete('/:pid', async (req, res) => {
     try {
-        const id = parseInt(req.params.pid); // Corregido el error tipográfico
+        const id = parseInt(req.params.pid); 
         const deleted = await productManager.deleteProduct(id);
         if (!deleted) {
             return res.status(404).json({ error: 'Producto no encontrado para ser eliminado' });
