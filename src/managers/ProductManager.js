@@ -33,8 +33,9 @@ class ProductManager {
     // Método para agregar un producto nuevo
     async addProduct(productData) {
         try {
-            console.log("recibi:", productData);
+            console.log("📝 Datos recibidos en addProduct:", productData);
             const products = await this.getProducts();
+            console.log("📝 Productos actuales:", products);
 
             // Generar un ID
             const newId = products.length > 0 ? products[products.length - 1].id + 1 : 1;

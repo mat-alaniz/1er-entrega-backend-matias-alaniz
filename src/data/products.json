@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "id": 1,
+    "status": true,
+    "title": "vapper",
+    "price": 50000,
+    "description": "dqwde",
+    "code": "CODE-2883",
+    "stock": 10
+  }
+]
