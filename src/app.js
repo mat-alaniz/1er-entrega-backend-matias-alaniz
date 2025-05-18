@@ -9,7 +9,11 @@ const cartsRouter = require('./routes/carts.router');
 
 const app = express();
 
-app.engine('handlebars', exphbs.engine());
+app.engine('handlebars', exphbs.engine({
+  extname: '.handlebars',
+  layoutsDir: path.join(__dirname, 'views', 'layouts'),
+  defaultLayout: 'main'
+}));
 app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'views'));
 
@@ -28,10 +32,12 @@ app.use((req, res) => {
 
 const httpServer = createServer(app);
 const io = new Server(httpServer);
+let productosActualizados = [];
 
 io.on('connection', (socket) => {
-  let productosActualizados = [];
   console.log('Nuevo cliente conectado');
+
+  socket.emit('updateProducts', productosActualizados);
 
   socket.on('addProduct', (productData) => {
     const newProduct = { ...productData, id: Date.now().toString() };
