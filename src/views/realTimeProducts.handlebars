@@ -1,95 +1,101 @@
-{{! src/views/realTimeProducts.handlebars }}
+<!-- src/views/realTimeProducts.handlebars -->
 <div class="container mt-4">
-    <h1 class="mb-4 text-center">Productos en Tiempo Real</h1>
-
-   
+    <!-- Lista de productos (se actualiza via WebSockets) -->
     <ul id="productsList" class="list-group mb-4">
         {{#each products}}
-        <li class="list-group-item d-flex justify-content-between align-items-center" data-id="{{this.id}}">
-            <div>
-                <strong>{{this.title}}</strong> - ${{this.price}}
-                <br>
-                <small class="text-muted">ID: {{this.id}}</small>
+        <li class="list-group-item" data-id="{{this.id}}">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h5>{{this.title}}</h5>
+                    <p class="mb-1">{{this.description}}</p>
+                    <small class="text-muted">Precio: ${{this.price}} | ID: {{this.id}}</small>
+                </div>
+                <button class="btn btn-danger btn-sm delete-btn" data-id="{{this.id}}">
+                    Eliminar
+                </button>
             </div>
-            <button class="btn btn-danger btn-sm delete-btn" data-id="{{this.id}}">
-                <i class="bi bi-trash"></i> Eliminar
-            </button>
         </li>
         {{/each}}
     </ul>
 
-    {{! Formulario para agregar productos }}
-    <div class="card mb-4">
+    <!-- Nuevo formulario (con todos los campos requeridos) -->
+    <div class="card">
         <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">Agregar Producto</h5>
+            <h5>Agregar Producto</h5>
         </div>
         <div class="card-body">
             <form id="addProductForm">
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label for="title" class="form-label">Nombre</label>
-                        <input type="text" class="form-control" id="title" name="title" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="price" class="form-label">Precio</label>
-                        <input type="number" class="form-control" id="price" name="price" min="0" step="0.01" required>
-                    </div>
-                    <div class="col-12">
-                        <button type="submit" class="btn btn-success w-100">
-                            <i class="bi bi-plus-circle"></i> Agregar
-                        </button>
-                    </div>
+                <div class="mb-3">
+                    <label for="title" class="form-label">Nombre</label>
+                    <input type="text" class="form-control" id="title" name="title" required>
                 </div>
+                <div class="mb-3">
+                    <label for="price" class="form-label">Precio</label>
+                    <input type="number" class="form-control" id="price" name="price" min="0" step="0.01" required>
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label">Descripción</label>
+                    <textarea class="form-control" id="description" name="description" rows="2" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-success w-100">Agregar Producto</button>
             </form>
         </div>
     </div>
 </div>
 
-{{! Scripts específicos de esta vista }}
 <script src="/socket.io/socket.io.js"></script>
 <script>
     const socket = io();
+    const form = document.getElementById('addProductForm');
 
-    // Actualizar lista de productos
-    socket.on('updateProducts', (products) => {
-        const productsList = document.getElementById('productsList');
-        productsList.innerHTML = products.map(product => `
-            <li class="list-group-item d-flex justify-content-between align-items-center" data-id="${product.id}">
-                <div>
-                    <strong>${product.title}</strong> - $${product.price}
-                    <br>
-                    <small class="text-muted">ID: ${product.id}</small>
-                </div>
-                <button class="btn btn-danger btn-sm delete-btn" data-id="${product.id}">
-                    <i class="bi bi-trash"></i> Eliminar
-                </button>
-            </li>
-        `).join('');
-
-        // Agregar eventos a los botones de eliminar
-        document.querySelectorAll('.delete-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const productId = btn.getAttribute('data-id');
-                socket.emit('deleteProduct', productId);
-            });
-        });
-    });
-
-    // Enviar nuevo producto
-    document.getElementById('addProductForm').addEventListener('submit', (e) => {
+    form.addEventListener('submit', (e) => {
         e.preventDefault();
         const title = document.getElementById('title').value;
         const price = parseFloat(document.getElementById('price').value);
-        
-        if (title && !isNaN(price)) {
-            socket.emit('addProduct', { 
-                title, 
-                price, 
-                id: Date.now().toString() 
-            });
-            e.target.reset();
-        } else {
-            alert('Por favor complete todos los campos correctamente');
+        const description = document.getElementById('description').value;
+
+        if (!title || isNaN(price) || !description) {
+            return alert('Completa todos los campos correctamente!');
         }
+
+        socket.emit('addProduct', { 
+            title, 
+            price, 
+            description,
+            // Agregá otros campos si tu ProductManager los necesita ▼
+            code: `CODE-${Date.now().toString().slice(-4)}`, // Ejemplo de código auto-generado
+            stock: 10, // Valor por defecto
+            status: true // Valor por defecto
+        });
+        form.reset();
+    });
+
+    // Escuchar clicks en los botones de eliminar (delegación de eventos)
+    document.getElementById('productsList').addEventListener('click', function(e) {
+        if (e.target.classList.contains('delete-btn')) {
+            const id = e.target.getAttribute('data-id');
+            if (confirm('¿Seguro que deseas eliminar este producto?')) {
+                socket.emit('deleteProduct', id);
+            }
+        }
+    });
+
+    // Actualización en tiempo real de la lista de productos
+    socket.on('updateProducts', (products) => {
+        const productsList = document.getElementById('productsList');
+        productsList.innerHTML = products.map(product => `
+            <li class="list-group-item" data-id="${product.id}">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5>${product.title}</h5>
+                        <p class="mb-1">${product.description}</p>
+                        <small class="text-muted">Precio: $${product.price} | ID: ${product.id}</small>
+                    </div>
+                    <button class="btn btn-danger btn-sm delete-btn" data-id="${product.id}">
+                        Eliminar
+                    </button>
+                </div>
+            </li>
+        `).join('');
     });
 </script>

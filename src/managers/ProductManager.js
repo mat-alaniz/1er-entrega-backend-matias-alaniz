@@ -33,6 +33,7 @@ class ProductManager {
     // Método para agregar un producto nuevo
     async addProduct(productData) {
         try {
+            console.log("recibi:", productData);
             const products = await this.getProducts();
 
             // Generar un ID
@@ -46,6 +47,7 @@ class ProductManager {
 
             products.push(newProduct);
             await this.saveProducts(products);
+            console.log("producto agregando:", newProduct);
             return newProduct;
         } catch (error) {
             console.error('Error agregando el producto:', error);

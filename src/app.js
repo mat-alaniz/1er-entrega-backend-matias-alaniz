@@ -6,6 +6,9 @@ const path = require('path');
 const viewsRouter = require('./routes/views.router');
 const productsRouter = require('./routes/products.router');
 const cartsRouter = require('./routes/carts.router');
+const ProductManager = require('./managers/ProductManager');
+const { title } = require('process');
+const productManager = new ProductManager();
 
 const app = express();
 
@@ -34,23 +37,23 @@ const httpServer = createServer(app);
 const io = new Server(httpServer);
 let productosActualizados = [];
 
-io.on('connection', (socket) => {
+io.on('connection', async (socket) => {
   console.log('Nuevo cliente conectado');
 
-  socket.emit('updateProducts', productosActualizados);
-
-  socket.on('addProduct', (productData) => {
-    const newProduct = { ...productData, id: Date.now().toString() };
-    productosActualizados.push(newProduct);
+  socket.on('addProduct', async (productData) => {
+    await productManager.addProduct(productData);
+    const productosActualizados = await productManager.getProducts();
     io.emit('updateProducts', productosActualizados);
   });
-  socket.on('deleteProduct', (productId) => {
-    productosActualizados = productosActualizados.filter(p => p.id !== productId);
+
+  socket.on('deleteProduct', async (id) => {
+    await productManager.deleteProduct(Number(id));
+    const productosActualizados = await productManager.getProducts();
     io.emit('updateProducts', productosActualizados);
   });
 });
 
-const PORT = 8080;
+const PORT = 8081;
 httpServer.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
