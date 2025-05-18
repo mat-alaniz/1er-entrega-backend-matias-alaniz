@@ -32,12 +32,11 @@ class ProductManager {
 
     // Método para agregar un producto nuevo
     async addProduct(productData) {
+          if (!productData.title || !productData.description || !productData.code || productData.price <= 0) {
+        throw new Error("Faltan campos obligatorios o son inválidos");
+    }
         try {
-            console.log("📝 Datos recibidos en addProduct:", productData);
             const products = await this.getProducts();
-            console.log("📝 Productos actuales:", products);
-
-            // Generar un ID
             const newId = products.length > 0 ? products[products.length - 1].id + 1 : 1;
 
             const newProduct = {
@@ -51,8 +50,8 @@ class ProductManager {
             console.log("producto agregando:", newProduct);
             return newProduct;
         } catch (error) {
-            console.error('Error agregando el producto:', error);
-            return null;
+            console.error('Error agregando el producto:', error.message);
+            throw new Error('Error agregando el producto');
         }
     }
 
