@@ -1,0 +1,22 @@
+<div class="container mt-4">
+  <h1 class="text-center mb-4">Productos</h1>
+  <div class="text-center mb-4">
+    <a href="/realtimeproducts" class="btn btn-primary">Ver productos en tiempo real</a>
+  </div>
+  <div class="row">
+    {{#each products}}
+      <div class="col-md-4 mb-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">{{this.title}}</h5>
+            <p class="card-text">
+              <strong>Precio:</strong> ${{this.price}}<br>
+              <strong>ID:</strong> {{this.id}}<br>
+              <strong>Stock:</strong> {{this.stock}}
+            </p>
+          </div>
+        </div>
+      </div>
+    {{/each}}
+  </div>
+</div>
