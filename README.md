@@ -1,39 +1,29 @@
-#  API de Productos y Carritos
+# Backend Ecommerce - Entregas 1ra y 2da
 
-Este proyecto consiste en el desarrollo de un servidor backend con Node.js y Express, que permite administrar productos y carritos de compra. La persistencia de datos se realiza mediante archivos JSON.
-
-##  Estructura del Proyecto
-
-- `/src/routes`: Rutas de la API (`products.router.js` y `carts.router.js`)
-- `/src/managers`: Lógica de manejo de archivos (`ProductManager.js` y `CartManager.js`)
-- `/src/data`: Archivos `products.json` y `carts.json` donde se guarda la información
-- `app.js`: Punto de entrada de la aplicación
-
-##  Funcionalidades
-
-### Productos (`/api/products`)
-- `GET /`: Lista todos los productos
-- `GET /:pid`: Muestra un producto por ID
-- `POST /`: Crea un nuevo producto
-- `PUT /:pid`: Actualiza un producto
-- `DELETE /:pid`: Elimina un producto
-
-### Carritos (`/api/carts`)
-- `POST /`: Crea un nuevo carrito
-- `GET /:cid/products`: Lista los productos de un carrito
-- `POST /:cid/products/:pid`: Agrega un producto al carrito
-
-##  Tecnologías utilizadas
-
+## 🚀 Tecnologías usadas
 - Node.js
 - Express
-- File System (fs) para persistencia
+- Socket.io
+- Handlebars
+- Bootstrap
+- SweetAlert2
 
-##  Instalación
+## 📌 Funcionalidades implementadas
 
-1. Cloná el repositorio  
-   `git clone https://github.com/mat-alaniz/1er-entrega-backend-matias-alaniz`
+### 1️⃣ Primera Entrega (API REST)
+✔ Sistema de gestión de productos con `ProductManager`  
+✔ Endpoints:
+- `GET /api/products` - Listar todos los productos
+- `GET /api/products/:pid` - Obtener producto por ID
+- `POST /api/products` - Crear nuevo producto
+- `PUT /api/products/:pid` - Actualizar producto
+- `DELETE /api/products/:pid` - Eliminar producto
 
-2. Instalá las dependencias  
-   ```bash
-   npm install
+### 2️⃣ Segunda Entrega (WebSockets + Handlebars)
+✔ Vista `/home` con lista estática de productos (Handlebars)  
+✔ Vista `/realtimeproducts` con actualización en tiempo real (WebSockets)  
+✔ Formulario interactivo para agregar productos  
+✔ Eliminación con confirmación mediante SweetAlert2  
+✔ Diseño responsive con Bootstrap
+
+   
