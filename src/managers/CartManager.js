@@ -1,5 +1,3 @@
-//carritos
-
 const fs = require('fs');
 const path = require('path');
 
@@ -8,7 +6,6 @@ class CartManager {
         this.cartsFilePath = path.join(__dirname, '../data/carts.json');
     }
 
-    // Leer los carritos desde el archivo
     async getCarts() {
         try {
             if (fs.existsSync(this.cartsFilePath)) {
@@ -23,7 +20,6 @@ class CartManager {
         }
     }
 
-    // Guardar los carritos en el archivo
     async saveCarts(carts) {
         try {
             await fs.promises.writeFile(this.cartsFilePath, JSON.stringify(carts, null, 2));
@@ -32,7 +28,6 @@ class CartManager {
         }
     }
 
-    // Crear un nuevo carrito
     async createCart() {
         try {
             const carts = await this.getCarts();
@@ -51,7 +46,6 @@ class CartManager {
         }
     }
 
-    // Obtener un carrito por ID
     async getCartById(cartId) {
         try {
             const carts = await this.getCarts();
@@ -62,7 +56,6 @@ class CartManager {
         }
     }
 
-    // Agregar un producto a un carrito
     async addProductToCart(cartId, productId) {
         try {
             const carts = await this.getCarts();

@@ -1,10 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const CartManager = require('../managers/CartManager');
-
 const cartManager = new CartManager();
-
-//crear un nuevo carrito
 
 router.post('/', async (req, res) => {
     try {
@@ -14,7 +11,6 @@ router.post('/', async (req, res) => {
         res.status(500).json({ error: 'Error al crear el carrito' });
     }
 });
-//obtener productos de un carrito
 
 router.get('/:cid/products', async (req, res) => {
 try {
@@ -28,8 +24,6 @@ try {
     res.status(500).json({ error: 'Error al obtener los productos del carrito' });
 }
 });
-
-//agregar un producto al carrito
 
 router.post('/:cid/products/:pid', async (req, res) => {
     try {

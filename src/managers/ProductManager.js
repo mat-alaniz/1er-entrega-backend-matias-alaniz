@@ -3,10 +3,9 @@ const path = require('path');
 
 class ProductManager {
     constructor() {
-        this.productsFilePath = path.join(__dirname, '../data/products.json'); // Ruta absoluta al archivo
+        this.productsFilePath = path.join(__dirname, '../data/products.json');
     }
 
-    // Método para leer productos del archivo
     async getProducts() {
         try {
             if (fs.existsSync(this.productsFilePath)) {
@@ -21,7 +20,6 @@ class ProductManager {
         }
     }
 
-    // Método para guardar productos
     async saveProducts(products) {
         try {
             await fs.promises.writeFile(this.productsFilePath, JSON.stringify(products, null, 2));
@@ -30,7 +28,6 @@ class ProductManager {
         }
     }
 
-    // Método para agregar un producto nuevo
     async addProduct(productData) {
           if (!productData.title || !productData.description || !productData.code || productData.price <= 0) {
         throw new Error("Faltan campos obligatorios o son inválidos");
@@ -47,7 +44,6 @@ class ProductManager {
 
             products.push(newProduct);
             await this.saveProducts(products);
-            console.log("producto agregando:", newProduct);
             return newProduct;
         } catch (error) {
             console.error('Error agregando el producto:', error.message);
@@ -55,7 +51,6 @@ class ProductManager {
         }
     }
 
-    // Método para obtener un producto por ID
     async getProductById(id) {
         try {
             const products = await this.getProducts();
@@ -66,7 +61,6 @@ class ProductManager {
         }
     }
 
-    // Método para actualizar un producto
     async updateProduct(id, updateData) {
         try {
             const products = await this.getProducts();
@@ -76,7 +70,6 @@ class ProductManager {
                 return null;
             }
 
-            // No permitir cambiar el ID
             products[index] = { ...products[index], ...updateData, id };
             await this.saveProducts(products);
             return products[index];
@@ -86,7 +79,6 @@ class ProductManager {
         }
     }
 
-    // Método para eliminar un producto
     async deleteProduct(id) {
         try {
             const products = await this.getProducts();

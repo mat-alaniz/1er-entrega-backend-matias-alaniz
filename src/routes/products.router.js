@@ -1,12 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const ProductManager = require('../managers/ProductManager');
-
-//para inciar el manager
-
 const productManager = new ProductManager();
 
-//para obtener todos los productos
 router.get('/', async (req, res) => {
     try {
         const products = await productManager.getProducts();
@@ -16,7 +12,6 @@ router.get('/', async (req, res) => {
     }
 });
 
-//para obtener un producto por id
 router.get('/:pid', async (req, res) => {
     try {
         const id = parseInt(req.params.pid);
@@ -30,16 +25,12 @@ router.get('/:pid', async (req, res) => {
     }
 });
 
-//crear un nuevo producto
 router.post('/', async (req, res) => {
     try {
         const { title, description, code, price, stock, category, thumbnail } = req.body;
-
-        //validacion de los datos
         if (!title || !description || !code || !price || !stock || !category) {
             return res.status(400).json({ error: 'Faltan datos requeridos' });
         }
-
         const newProduct = await productManager.addProduct({
             title,
             description,
@@ -55,7 +46,6 @@ router.post('/', async (req, res) => {
     }
 });
 
-//actualizar un producto por id
 router.put('/:pid', async (req, res) => {
     try {
         const id = parseInt(req.params.pid);
@@ -70,7 +60,6 @@ router.put('/:pid', async (req, res) => {
     }
 });
 
-//eliminar un producto.
 router.delete('/:pid', async (req, res) => {
     try {
         const id = parseInt(req.params.pid); 

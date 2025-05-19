@@ -38,8 +38,6 @@ const io = new Server(httpServer);
 let productosActualizados = [];
 
 io.on('connection', async (socket) => {
-  console.log('Nuevo cliente conectado');
-
   socket.on('addProduct', async (productData) => {
     await productManager.addProduct(productData);
     const productosActualizados = await productManager.getProducts();

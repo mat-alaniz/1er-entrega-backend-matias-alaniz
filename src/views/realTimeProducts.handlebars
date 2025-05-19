@@ -1,24 +1,4 @@
-<!-- src/views/realTimeProducts.handlebars -->
 <div class="container mt-4">
-    <!-- Lista de productos (se actualiza via WebSockets) -->
-    <ul id="productsList" class="list-group mb-4">
-        {{#each products}}
-        <li class="list-group-item" data-id="{{this.id}}">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h5>{{this.title}}</h5>
-                    <p class="mb-1">{{this.description}}</p>
-                    <small class="text-muted">Precio: ${{this.price}} | ID: {{this.id}}</small>
-                </div>
-                <button class="btn btn-danger btn-sm delete-btn" data-id="{{this.id}}">
-                    Eliminar
-                </button>
-            </div>
-        </li>
-        {{/each}}
-    </ul>
-
-    <!-- Nuevo formulario (con todos los campos requeridos) -->
     <div class="card">
         <div class="card-header bg-primary text-white">
             <h5>Agregar Producto</h5>
@@ -42,7 +22,24 @@
         </div>
     </div>
 </div>
+<ul id="productsList" class="list-group mb-4">
+    {{#each products}}
+    <li class="list-group-item" data-id="{{this.id}}">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h5>{{this.title}}</h5>
+                <p class="mb-1">{{this.description}}</p>
+                <small class="text-muted">Precio: ${{this.price}} | ID: {{this.id}}</small>
+            </div>
+            <button class="btn btn-danger btn-sm delete-btn" data-id="{{this.id}}">
+                Eliminar
+            </button>
+        </div>
+    </li>
+    {{/each}}
+</ul>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script>
     const socket = io();
@@ -55,32 +52,60 @@
         const description = document.getElementById('description').value;
 
         if (!title || isNaN(price) || !description) {
-            return alert('Completa todos los campos correctamente!');
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Completa todos los campos correctamente!'
+            });
+            return;
         }
 
         socket.emit('addProduct', { 
             title, 
             price, 
             description,
-            // Agregá otros campos si tu ProductManager los necesita ▼
-            code: `CODE-${Date.now().toString().slice(-4)}`, // Ejemplo de código auto-generado
-            stock: 10, // Valor por defecto
-            status: true // Valor por defecto
+            code: `CODE-${Date.now().toString().slice(-4)}`,
+            stock: 10,
+            status: true
         });
+        
+        Swal.fire({
+            position: 'top-end',
+            icon: 'success',
+            title: 'Producto agregado',
+            showConfirmButton: false,
+            timer: 1500
+        });
+        
         form.reset();
     });
 
-    // Escuchar clicks en los botones de eliminar (delegación de eventos)
     document.getElementById('productsList').addEventListener('click', function(e) {
         if (e.target.classList.contains('delete-btn')) {
             const id = e.target.getAttribute('data-id');
-            if (confirm('¿Seguro que deseas eliminar este producto?')) {
-                socket.emit('deleteProduct', id);
-            }
+            
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "¡No podrás revertir esto!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    socket.emit('deleteProduct', id);
+                    Swal.fire(
+                        '¡Eliminado!',
+                        'El producto ha sido eliminado.',
+                        'success'
+                    );
+                }
+            });
         }
     });
 
-    // Actualización en tiempo real de la lista de productos
     socket.on('updateProducts', (products) => {
         const productsList = document.getElementById('productsList');
         productsList.innerHTML = products.map(product => `
